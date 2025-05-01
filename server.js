@@ -8,6 +8,11 @@ app.get("/", (req, res) => {
   res.send("Budgeting API is running!");
 });
 
+app.get("/hello", (req, res) => {
+  console.log("Hello endpoint was hit");
+  res.send("Check the console!");
+});
+
 app.listen(port, () => {
   console.log(`Budgeting API listening at http://localhost:${port}`);
 });
