@@ -1,0 +1,23 @@
+{
+  "name": "personal-budget-api",
+  "version": "1.0.0",
+  "description": "Just a project to practice building apis.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tylercoen/personal-budget-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tylercoen/personal-budget-api/issues"
+  },
+  "homepage": "https://github.com/tylercoen/personal-budget-api#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
