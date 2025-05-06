@@ -48,7 +48,7 @@ router.get("/:id", (req, res) => {
 // PUT: udpate an envelope by ID
 router.put("/:id", (req, res) => {
   const envelopeId = parseInt(req.params.id);
-  const { withdraw, amount } = req.body;
+  const { withdraw, amount, name } = req.body;
 
   //find the envelope by id
   const envelope = envelopes.find((env) => env.id === envelopeId);
@@ -76,7 +76,9 @@ router.put("/:id", (req, res) => {
   }
   //subtract the amount from the envelope
   envelope.amount -= withdraw;
-  messageParts.push(`withdrew ${withdraw}`);
+  if (withdraw !== undefined) {
+    messageParts.push(`withdrew ${withdraw}`);
+  }
 
   //HANDLE SETTING A NEW BUDGET
   if (typeof amount === "number") {
@@ -88,6 +90,14 @@ router.put("/:id", (req, res) => {
     envelope.amount = amount;
     messageParts.push(`updated budget to ${amount}`);
   }
+
+  //Update envelope name
+  if (typeof name === "string" && name.trim().length > 0) {
+    envelope.name = name.trim();
+    messageParts.push(`renamed envelope to ${name.trim()}`);
+  }
+
+  //Update the message
 
   if (messageParts.length === 0) {
     return res.status(400).json({ error: "No valid update fields provided" });
