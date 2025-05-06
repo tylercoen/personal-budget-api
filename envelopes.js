@@ -108,4 +108,18 @@ router.put("/:id", (req, res) => {
   });
 });
 
+router.delete("/:id", (req, res) => {
+  const envelopeId = parseInt(req.params.id);
+  const index = envelopes.findIndex((env) => env.id === envelopeId);
+  if (index === -1) {
+    res.status(400).json({ error: "Envelope not found" });
+  }
+  //remove the envelope
+  const deleteEnvelope = envelopes.splice(index, 1)[0];
+  res.status(200).json({
+    message: `Successfully deleted envelope ${deleteEnvelope.name}`,
+    deleteEnvelope,
+  });
+});
+
 module.exports = router;
