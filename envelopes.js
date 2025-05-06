@@ -122,4 +122,38 @@ router.delete("/:id", (req, res) => {
   });
 });
 
+router.post("/transfer/:fromId/:toId", (req, res) => {
+  const fromId = parseInt(req.params.fromId);
+  const toId = parseInt(req.params.toId);
+  const { amount } = req.body;
+
+  if (isNaN(fromId) || isNaN(toId)) {
+    return res.status(400).json({ error: "Invalid envelope IDs" });
+  }
+  if (typeof amount !== "number" || amount <= 0) {
+    return res
+      .status(400)
+      .json({ error: "Transfer amount must be a positive number" });
+  }
+
+  const fromEnvelope = envelopes.find((env) => env.id === fromId);
+  const toEnvelope = envelopes.find((env) => env.id === toId);
+  if (!fromEnvelope || !toEnvelope) {
+    res.status(404).json({ error: "One or both envelopes not found" });
+  }
+  if (fromEnvelope.amount < amount) {
+    return res
+      .status(400)
+      .json({ error: "Insufficient funds in the source envelope" });
+  }
+  fromEnvelope.amount -= amount;
+  toEnvelope.amount += amount;
+
+  res.status(200).json({
+    message: `Transferred $${amount} from ${fromEnvelope.name} to ${toEnvelope.name}.`,
+    from: fromEnvelope,
+    to: toEnvelope,
+  });
+});
+
 module.exports = router;
