@@ -1,3 +1,4 @@
+const pool = require("./db");
 const e = require("express");
 const express = require("express");
 const router = express.Router();
@@ -12,12 +13,18 @@ let envelopes = [
   { id: 8, name: "Health & Fitness", amount: 200 },
 ];
 
-router.get("/", (req, res) => {
-  res.json(envelopes);
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM envelopes");
+    res.json(result.rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Database error" });
+  }
 });
 
 // POST: create a new envelope
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { name, amount } = req.body;
 
   //basic validation
@@ -25,24 +32,20 @@ router.post("/", (req, res) => {
     return res.status(400).json({ error: "Invalid envelope data" });
   }
 
-  //generate new ID
-  const newId =
-    envelopes.length > 0 ? envelopes[envelopes.length - 1].id + 1 : 1;
-  const newEnvelope = { id: newId, name, amount };
-
-  envelopes.push(newEnvelope);
-  res.status(201).json(newEnvelope);
+  try {
+    const result = await pool.query(
+      "INSERT INTO envelopes (name, amount) VALUES ($1, $2) RETURNING *",
+      [name, amount]
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Database error" });
+  }
 });
 
 // GET envelope by id
 router.get("/:id", (req, res) => {
   const envelopeId = parseInt(req.params.id);
-  const envelope = envelopes.find((env) => env.id === envelopeId);
-
-  if (!envelope) {
-    res.status(404).json({ error: "Envelope not found" });
-  }
-  res.json(envelope);
 });
 
 // PUT: udpate an envelope by ID
