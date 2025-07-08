@@ -61,68 +61,40 @@ router.get("/:id", async (req, res) => {
 });
 
 // PUT: udpate an envelope by ID
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const envelopeId = parseInt(req.params.id);
   const { withdraw, amount, name } = req.body;
-
-  //find the envelope by id
-  const envelope = envelopes.find((env) => env.id === envelopeId);
-
-  //If the evenlope doesn't exist
-  if (!envelope) {
-    return res.status(400).json({ error: "Envelope not found" });
-  }
   let messageParts = [];
 
-  // HANDLE WITHDRAWAL
-  //ensure the withdraw amount is valid
-  if (typeof withdraw === "number") {
-    if (withdraw < 0) {
-      return res
-        .status(400)
-        .json({ error: "Withdraw amount must be a non-negative number" });
+  try {
+    //retrieve the envelope
+    const { rows } = await pool.query("SELECT * FROM envelopes WHERE id = $1", [
+      id,
+    ]);
+    const envelope = rows[0];
+    if (!envelope) {
+      return res.status(404).json({ error: "Envelope not found" });
     }
-  }
-  //ensure there are enough funds in the envelope
-  if (envelope.amount < withdraw) {
-    return res
-      .status(400)
-      .json({ error: "Insufficient funds in the envelope" });
-  }
-  //subtract the amount from the envelope
-  envelope.amount -= withdraw;
-  if (withdraw !== undefined) {
-    messageParts.push(`withdrew ${withdraw}`);
-  }
+    let newAmount = envelope.amount;
 
-  //HANDLE SETTING A NEW BUDGET
-  if (typeof amount === "number") {
-    if (amount < 0) {
-      return res
-        .status(400)
-        .json({ error: "Budget amont must be non-negative" });
+    if (typeof withdraw === number) {
+      if (withdraw < 0 || withdraw > newAmount) {
+        return res.status(400).json({ error: "Invalid withdraw amount" });
+      }
+      newAmount -= withdraw;
+      messageParts.push(`withdrew ${withdraw}`);
+
+      // Add the rest of the logic here. Yesterday you were trying to test a POST not a PUT
     }
-    envelope.amount = amount;
-    messageParts.push(`updated budget to ${amount}`);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Database error" });
   }
-
-  //Update envelope name
-  if (typeof name === "string" && name.trim().length > 0) {
-    envelope.name = name.trim();
-    messageParts.push(`renamed envelope to ${name.trim()}`);
-  }
-
-  //Update the message
-
-  if (messageParts.length === 0) {
-    return res.status(400).json({ error: "No valid update fields provided" });
-  }
-  res.status(200).json({
-    message: `Successfully ${messageParts.join(" and ")} for ${envelope.name}.`,
-    updatedEnvelope: envelope,
-  });
 });
 
+//This all still isn't updated yet.
+
+// DELETE
 router.delete("/:id", (req, res) => {
   const envelopeId = parseInt(req.params.id);
   const index = envelopes.findIndex((env) => env.id === envelopeId);
