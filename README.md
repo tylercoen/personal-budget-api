@@ -1,7 +1,5 @@
 # personal-budget-api
 
-# Budgeting API
-
 A simple budgeting API built with Node.js and Express. This project allows users to manage budget "envelopes" by creating, reading, updating, and deleting them, as well as updating envelope balances.
 
 ## Features
