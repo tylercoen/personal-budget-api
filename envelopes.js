@@ -69,7 +69,7 @@ router.put("/:id", async (req, res) => {
   try {
     //retrieve the envelope
     const { rows } = await pool.query("SELECT * FROM envelopes WHERE id = $1", [
-      id,
+      envelopeId,
     ]);
     const envelope = rows[0];
     if (!envelope) {
@@ -77,15 +77,41 @@ router.put("/:id", async (req, res) => {
     }
     let newAmount = envelope.amount;
 
-    if (typeof withdraw === number) {
+    if (typeof withdraw === "number") {
       if (withdraw < 0 || withdraw > newAmount) {
         return res.status(400).json({ error: "Invalid withdraw amount" });
       }
       newAmount -= withdraw;
       messageParts.push(`withdrew ${withdraw}`);
-
-      // Add the rest of the logic here. Yesterday you were trying to test a POST not a PUT
     }
+
+    if (typeof amount === "number" && amount >= 0) {
+      newAmount = amount;
+      messageParts.push(`updated budget to ${amount}`);
+    }
+
+    const newName =
+      typeof name === "string" && name.trim().length > 0
+        ? name.trim()
+        : envelope.name;
+    if (newName !== envelope.name) {
+      messageParts.push(`renamed enevelope to ${newName}`);
+    }
+
+    if (messageParts.length === 0) {
+      return res.status(400).json({ error: "No valud update fields provided" });
+    }
+
+    const updated = await pool.query(
+      "UPDATE envelopes SET name =  $1, amount = $2 WHERE id = $3 RETURNING *",
+      [newName, newAmount, envelopeId]
+    );
+
+    //send conf message
+    res.json({
+      message: `Successfully ${messageParts.join(" and ")}.`,
+      updatedEnvelope: updated.rows[0],
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Database error" });
