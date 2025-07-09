@@ -3,6 +3,8 @@ const app = express();
 const port = 3000;
 
 const envelopesRouter = require("./envelopes");
+const transactionRouter = require("./transactions");
+app.use("/transactions", transactionRouter);
 
 app.use(express.json());
 
