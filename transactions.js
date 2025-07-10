@@ -78,6 +78,10 @@ router.put("/:id", async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Transaction not found" });
     }
+    res.json({
+      message: "Transaction updated successfully",
+      transaction: result.rows[0],
+    });
   } catch (err) {
     console.log(err);
     res
