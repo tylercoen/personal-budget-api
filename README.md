@@ -1,29 +1,29 @@
-# personal-budget-api
+# Personal Budget API
 
-A simple budgeting API built with Node.js and Express. This project allows users to manage budget "envelopes" by creating, reading, updating, and deleting them, as well as updating envelope balances.
+This is a Node.js RESTful API for managing personal budgeting using "envelopes" (budget categories) and tracking transactions.
 
-## Features
+## 🚀 Features
 
-- RESTful API with CRUD operations for budget envelopes
-- Update balances between envelopes
-- Built using Node.js and Express
-- Designed for local development and API testing with Postman
-- Git version control for project tracking
+- Create, update, and delete budget envelopes
+- Record transactions with date, amount, payment method, recipient, and envelope
+- Transfer funds between envelopes
+- Uses PostgreSQL on [Render](https://render.com)
+- Securely loads credentials from GitHub Codespaces Secrets
+- API documentation via Swagger at `/api-docs`
 
-## Getting Started
+## 📦 Tech Stack
 
-### Prerequisites
+- Node.js
+- Express.js
+- PostgreSQL
+- Swagger (OpenAPI) for docs
+- GitHub Codespaces for development
 
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- [Postman](https://www.postman.com/)
-- [GitHub Desktop](https://desktop.github.com/) (optional)
-- A code editor like [Visual Studio Code](https://code.visualstudio.com/)
+## 🛠 Setup
 
-### Installation
+1. Clone the repo and open in GitHub Codespaces
+2. Add your Render DB URL to Codespaces Secrets as `DATABASE_URL`
+3. Install dependencies:
 
-1. **Clone the repository**  
-   If you haven't already:
-   ```bash
-   git clone https://github.com/your-username/budgeting-api.git
-   cd budgeting-api
-   ```
+```bash
+npm install
