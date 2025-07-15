@@ -4,6 +4,7 @@ const port = 3000;
 
 const envelopesRouter = require("./envelopes");
 const transactionRouter = require("./transactions");
+const setupSwagger = require("./swagger");
 
 app.use(express.json());
 app.use("/transactions", transactionRouter);
@@ -18,6 +19,8 @@ app.get("/hello", (req, res) => {
   console.log("Hello endpoint was hit");
   res.send("Check the console!");
 });
+
+setupSwagger(app);
 
 app.listen(port, () => {
   console.log(`Budgeting API listening at http://localhost:${port}`);
