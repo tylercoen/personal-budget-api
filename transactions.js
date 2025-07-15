@@ -3,6 +3,48 @@ const router = express.Router();
 const pool = require("./db");
 
 // CREATE a new transaction
+/**
+ * @swagger
+ * /transactions:
+ *   post:
+ *     summary: Create a new transaction
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - payment_method
+ *               - recipient
+ *               - envelope_id
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-07-15"
+ *               amount:
+ *                 type: number
+ *                 example: 75.25
+ *               payment_method:
+ *                 type: string
+ *                 example: "Credit Card"
+ *               recipient:
+ *                 type: string
+ *                 example: "Amazon"
+ *               envelopes_id:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Transaction created
+ *       400:
+ *         description: Missing required fields
+ *       500:
+ *         description: Database error
+ */
+
 router.post("/", async (req, res) => {
   const { date, amount, payment_method, recipient, envelope_id } = req.body;
   if (!amount | !payment_method | !recipient | !envelope_id) {
@@ -31,6 +73,16 @@ router.post("/", async (req, res) => {
 });
 
 // READ all transactions
+/**
+ * @swagger
+ * /transactions:
+ *   get:
+ *     summary: Get all transactions
+ *     responses:
+ *       200:
+ *         description: List of all transactions
+ */
+
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
@@ -65,6 +117,43 @@ router.get("/:id", async (req, res) => {
 });
 
 // UPDATE a transaction
+/**
+ * @swagger
+ * /transactions/{id}:
+ *   put:
+ *     summary: Update an existing transaction
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the transaction to update
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date
+ *               amount:
+ *                 type: number
+ *               payment_method:
+ *                 type: string
+ *               recipient:
+ *                 type: string
+ *               envelope_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Transaction updated
+ *       404:
+ *         description: Transaction not found
+ *       500:
+ *         description: Database error
+ */
 router.put("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const { date, amount, payment_method, recipient, envelope_id } = req.body;
@@ -91,6 +180,26 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE a transaction
+/**
+ * @swagger
+ * /transactions/{id}:
+ *   delete:
+ *     summary: Delete a transaction
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the transaction to delete
+ *     responses:
+ *       200:
+ *         description: Transaction deleted
+ *       404:
+ *         description: Transaction not found
+ *       500:
+ *         description: Database error
+ */
 router.delete("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
 

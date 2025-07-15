@@ -13,6 +13,17 @@ let envelopes = [
   { id: 8, name: "Health & Fitness", amount: 200 },
 ];
 
+/**
+ * @swagger
+ * /envelopes:
+ *   get:
+ *     summary: Get all envelopes
+ *     responses:
+ *       200:
+ *         description: List of all envelopes
+ *
+ */
+
 router.get("/", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM envelopes");
@@ -22,6 +33,30 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+
+/**
+ * @swagger
+ * /envelopes:
+ *   post:
+ *     summary: Create a new envelope
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - amount
+ *             properties:
+ *               name:
+ *                 type: string
+ *               amount:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Envelope created
+ */
 
 // POST: create a new envelope
 router.post("/", async (req, res) => {
@@ -43,6 +78,25 @@ router.post("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /envelopes/{id}:
+ *   get:
+ *     summary: Get a single evelope by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the envelope to retrive
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Envelope found
+ *       400:
+ *         description: Envelope not found
+ */
+
 // GET envelope by id
 router.get("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
@@ -59,6 +113,34 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+
+/**
+ * @swagger
+ * /envelopes/{id}:
+ *   put:
+ *     summary: Update an evelope
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: number
+ *               name:
+ *                 type: string
+ *               withdraw:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Envelope updates
+ */
 
 // PUT: udpate an envelope by ID
 router.put("/:id", async (req, res) => {
@@ -118,6 +200,22 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /envelopes/{id}:
+ *   delete:
+ *     summary: Delete an evelope
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Envelope deleted
+ */
+
 // DELETE
 router.delete("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
@@ -139,6 +237,37 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
+
+/**
+ * @swagger
+ * /envelopes/transfer/{fromId}/{toId}:
+ *   post:
+ *     summary: Transfer funds between enveloeps
+ *     paramters:
+ *       - in: path
+ *         name: fromId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: toId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *             properties:
+ *               amount:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Transfer completed
+ */
 
 // POST
 router.post("/transfer/:fromId/:toId", async (req, res) => {
